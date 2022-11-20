@@ -6,6 +6,7 @@ This docker image enables the quick compilation of Cardinal C++ and produces a b
 
 Cardinal C++: https://github.com/sarahjabado/cardinal-cpp
 
+Docker Hub: https://hub.docker.com/r/sarahjabado/cardinal-compiler
 
 ### Usage
 ```
