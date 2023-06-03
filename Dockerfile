@@ -16,7 +16,7 @@ ENV TZ=Australia/Perth
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 RUN apt-get update
-RUN apt-get install -y g++ make cmake libhiredis-dev git
+RUN apt-get install -y clang make cmake libhiredis-dev git
 RUN mkdir /app
 WORKDIR /app
 

@@ -2,17 +2,17 @@
 CWD=$(pwd)
 
 install_submodules_manually() {
-    CONTENTS=$(cat src/.gitmodules | grep -E '(path|url).*' | cut -d " " -f 3)
+    CONTENTS=$(cat .gitmodules | grep -E '(path|url).*' | cut -d " " -f 3)
     CWD=$(pwd)
 
     LAST=""
     for item in ${CONTENTS[@]};
     do
-    cd $CWD/src
+    cd $CWD
     STRINGHEAD=$( echo "$item" | cut -d '/' -f 1)
         if [[ "$STRINGHEAD" == "vendor" ]]
         then
-            if [[ -d "$CWD/src/$item" ]]
+            if [[ -d "$CWD/$item" ]]
             then
                 LAST=$(echo "$item")
                 echo "$item already exists."
@@ -22,12 +22,12 @@ install_submodules_manually() {
             cd $item
             LAST=$(echo "$item")
         else
-            if [[ -d "$CWD/src/$LAST/.git" ]]
+            if [[ -d "$CWD/$LAST/.git" ]]
             then
                 echo "$LAST already installed."
                 continue
             fi
-            cd "$CWD/src/$LAST"
+            cd "$CWD/$LAST"
             echo "Installing $item"
             git init .
             git remote add origin $item
@@ -42,13 +42,13 @@ install_submodules_manually() {
 
 install_modules () {
     CWD=$(pwd)
-    if [[ ! -d "$CWD/src/vendor" ]]
+    if [[ ! -d "$CWD/vendor" ]]
     then
-        mkdir $CWD/src/vendor
+        mkdir $CWD/vendor
         git submodule init
         git submodule update
     fi
-    if [[ ! -d "$CWD/src/vendor/crashoz" ]]
+    if [[ ! -d "$CWD/vendor/crashoz" ]]
     then
         echo "Unable to auto-install using GIT, trying another route."
         install_submodules_manually
@@ -57,13 +57,15 @@ install_modules () {
     fi
 }
 
-if [[ ! -d "$CWD/src" ]]
+if [[ ! -d "$CWD/Cardinal" ]]
 then
-    mkdir "$CWD/src"
-    git clone https://github.com/sarahjabado/cardinal-cpp.git "$CWD/src"
-    install_modules
+    echo "This container must be ran within a Cardinal Context."
+    exit 1
 fi
-if [[ ! -f "$CWD/src/vendor/crashoz/uuid_v4/build/Makefile" ]]
+
+install_modules
+
+if [[ ! -f "$CWD/vendor/crashoz/uuid_v4/build/Makefile" ]]
 then
     cd src/vendor/crashoz/uuid_v4/
     mkdir build
@@ -72,25 +74,25 @@ then
     make
     cd $CWD
 fi
-if [[ ! -f "$CWD/src/vendor/sewenew/redis-plus-plus/build/Makefile" ]]
+if [[ ! -f "$CWD/vendor/sewenew/redis-plus-plus/build/Makefile" ]]
 then
-    cd $CWD/src/vendor/sewenew/redis-plus-plus/build && cmake .. && make
+    cd $CWD/vendor/sewenew/redis-plus-plus/build && cmake .. && make
     cd $CWD
 fi
 
-cd $CWD/src/vendor/sewenew/redis-plus-plus/build && make install
+cd $CWD/vendor/sewenew/redis-plus-plus/build && make install
 cd $CWD
 
-if [[ -d "$CWD/src/build/" ]]
+if [[ -d "$CWD/build/" ]]
 then
-    rm -rf $CWD/src/build/*
+    rm -rf $CWD/build/*
 else
-    mkdir $CWD/src/build
+    mkdir $CWD/build
 fi
 
-cd $CWD/src/build && cmake .. && make
+cd $CWD/build && cmake .. && make
 
-if [[ ! -f "$CWD/src/build/bin/libredis++.so.1" ]]
+if [[ ! -f "$CWD/build/bin/libredis++.so.1" ]]
 then
-    cp $CWD/src/vendor/sewenew/redis-plus-plus/build/libredis++.so.1.3.6 $CWD/src/build/bin/libredis++.so.1
+    cp $CWD/vendor/sewenew/redis-plus-plus/build/libredis++.so.1.3.6 $CWD/build/bin/libredis++.so.1
 fi
