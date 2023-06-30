@@ -96,3 +96,8 @@ if [[ ! -f "$CWD/build/bin/libredis++.so.1" ]]
 then
     cp $CWD/vendor/sewenew/redis-plus-plus/build/libredis++.so.1.3.6 $CWD/build/bin/libredis++.so.1
 fi
+
+if [[ ! -f "$CWD/build/bin/libcardinal.so" ]]
+then
+    cp "$CWD/build/lib/libcardinal.so" "$CWD/build/bin/libcardinal.so"
+fi
